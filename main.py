@@ -11,6 +11,14 @@ load_dotenv()
 
 focus_agent = None
 
+if __name__ == "__main__":
+    import uvicorn
+    import os
+
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global focus_agent
