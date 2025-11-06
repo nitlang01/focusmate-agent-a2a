@@ -1,0 +1,17 @@
+[project]
+name = "focusmate-agent-a2a"
+version = "0.1.0"
+description = "A focus session manager agent with A2A protocol support for Telex"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[all]>=0.115.12",
+    "pydantic>=2.10.4",
+    "httpx>=0.28.1",
+    "python-dotenv>=1.1.0",
+    "redis[hiredis]>=6.0.0",
+    "jsonrpcclient>=4.0.3"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

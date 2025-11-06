@@ -1,0 +1,20 @@
+# Python cache and metadata
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Packaging
+*.egg-info/
+dist/
+build/
+
+# Virtual envs
+.venv/
+env/
+venv/
+
+# OS / IDE files
+.vscode/
+.idea/
+.DS_Store
