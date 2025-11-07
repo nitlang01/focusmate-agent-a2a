@@ -26,15 +26,15 @@ async def a2a_focus(request: Request):
         # process
         result = await focus_agent.process_messages(
             messages=[rpc_request.params.message],
-            context_id=rpc_request.params.configuration.get("context_id"),
-            task_id=rpc_request.params.configuration.get("task_id"),
+            context_id=getattr(rpc_request.params.configuration, "context_id", None),
+            task_id=getattr(rpc_request.params.configuration, "task_id", None),
             config=rpc_request.params.configuration,
         )
 
         response = JSONRPCResponse(
             jsonrpc="2.0",
             id=rpc_request.id,
-            result={"status": "completed", "output": result}
+            result=result
         )
         return JSONResponse(content=response.model_dump())
 
@@ -48,11 +48,9 @@ async def a2a_focus(request: Request):
             status_code=500
         )
 
-@app.get("/health")
-async def health():
-    return {"status": "healthy", "agent": "focusmate"}
-
-
+@app.get("/")
+def root():
+    return {"message": "FocusMate A2A agent active."}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -66,3 +64,27 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+
+from fastapi.responses import JSONResponse
+from fastapi import Request
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    print("⚠️ Error:", exc)
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"error": str(exc)},
+    )
+
+from utils.redis_client import init_redis, redis_client
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global focus_agent
+    await init_redis()  # Initialize Redis here before FocusAgent starts
+    focus_agent = FocusAgent()
+    yield
+    focus_agent.sessions.clear()
+

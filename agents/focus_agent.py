@@ -92,3 +92,6 @@ class FocusAgent:
         if not active:
             return "📊 No active sessions right now."
         return f"📊 Current session: {active}"
+
+if not redis_client:
+    print("⚠️ Redis not initialized, skipping cache")
